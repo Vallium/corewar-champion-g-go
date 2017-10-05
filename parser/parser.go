@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"strings"
 	"bufio"
 	"os"
@@ -20,7 +19,6 @@ func Parse(path string) (*champ.Champion, error) {
 	}
 	defer file.Close()
 
-	var lines []string
 	scanner := bufio.NewScanner(file)
 
 	index := 0
@@ -29,13 +27,10 @@ func Parse(path string) (*champ.Champion, error) {
 			champion.SetName(strings.Split(scanner.Text(), "\"")[1])
 		} else if (index == 1) {
 			champion.SetComment(strings.Split(scanner.Text(), "\"")[1])
-		} else {
-			
+		} else if (index > 2) {
+			champion.PushInstruction(scanner.Text())
 		}
-		lines = append(lines, scanner.Text())
 		index++
 	}
-	fmt.Println(champion.GetName())
-	fmt.Println(champion.GetComment())
 	return champion, scanner.Err()
 }

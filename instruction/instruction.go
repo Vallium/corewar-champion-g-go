@@ -38,19 +38,39 @@ type DirIndReg	int32
 type Instruction struct {
 	opCode OpCode
 	params []interface{}
+	// param0 interface{}
+	// param1 interface{}
+	// param2 interface{}
+	// param3 interface{}
 }
 
-func Create(s string) (Instruction) {
+func Create(s string) (*Instruction) {
 	var ret Instruction 
 	ins := strings.Split(s, " ")
 	
-	for _, elem := range ins {
+	for i, elem := range ins {
 		elem = strings.Replace(elem, ",", "", -1)
+		// if (i == 0) {
+		// 	ret.setOpCode(elem)
+		// } else if (i == 1) {
+		// 	ret.param0 = elem
+		// } else if (i == 2) {
+		// 	ret.param1 = elem
+		// } else if (i == 3) {
+		// 	ret.param2 = elem
+		// } else if (i == 4) {
+		// 	ret.param3 = elem
+		// }
+		if (i == 0) {
+			ret.setOpCode(elem)
+		} else {
+			ret.params = append(ret.params, elem)
+		}
 	}
-	return ret
+	return &ret
 }
 
-func (i Instruction) setOpCode(s string) {
+func (i *Instruction) setOpCode(s string) {
 	switch (s) {
 	default:
 		return
