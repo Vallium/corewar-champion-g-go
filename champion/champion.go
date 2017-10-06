@@ -1,15 +1,13 @@
 package champion
 
 import (
-	"fmt"
-
 	inst "github.com/Vallium/corewar-champion-g-go/instruction"
 )
 
 type Champion struct {
-	name 			string
-	comment 		string
-	instructions	[]*inst.Instruction
+	name         string
+	comment      string
+	instructions []*inst.Instruction
 }
 
 func (c *Champion) SetName(name string) {
@@ -20,21 +18,24 @@ func (c *Champion) SetComment(comment string) {
 	c.comment = comment
 }
 
-func (c *Champion) GetName() (string) {
+func (c *Champion) GetName() string {
 	return c.name
 }
 
-func (c *Champion) GetComment() (string) {
+func (c *Champion) GetComment() string {
 	return c.comment
 }
 
-func (c Champion) PushInstruction(instruction string) {
+func (c *Champion) GetInstruction() []*inst.Instruction {
+	return c.instructions
+}
+
+func (c *Champion) PushInstruction(instruction string) {
 	i := inst.Create(instruction)
-	fmt.Println(i)
 	c.instructions = append(c.instructions, i)
 }
 
-func Create(name string, comment string) (*Champion) {
+func Create(name string, comment string) *Champion {
 	var c Champion
 
 	c.SetName(name)

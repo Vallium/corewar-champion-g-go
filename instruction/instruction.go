@@ -2,6 +2,8 @@ package instruction
 
 import (
 	"strings"
+
+	parameter "github.com/Vallium/corewar-champion-g-go/parameter"
 )
 
 type OpCode int
@@ -26,52 +28,37 @@ const (
 	Display
 )
 
-type Register	uint8	// 1..=16
-type Direct		int16
-type Indirect	int32
+type Register uint8 // 1..=16
+type Direct int16
+type Indirect int32
 
-type IndReg	uint8
-type DirReg	uint8
-type DirInd	int32
-type DirIndReg	int32
+type IndReg uint8
+type DirReg uint8
+type DirInd int32
+type DirIndReg int32
 
 type Instruction struct {
 	opCode OpCode
-	params []interface{}
-	// param0 interface{}
-	// param1 interface{}
-	// param2 interface{}
-	// param3 interface{}
+	params []*parameter.Parameter
 }
 
-func Create(s string) (*Instruction) {
-	var ret Instruction 
+func Create(s string) *Instruction {
+	var ret Instruction
 	ins := strings.Split(s, " ")
-	
+
 	for i, elem := range ins {
 		elem = strings.Replace(elem, ",", "", -1)
-		// if (i == 0) {
-		// 	ret.setOpCode(elem)
-		// } else if (i == 1) {
-		// 	ret.param0 = elem
-		// } else if (i == 2) {
-		// 	ret.param1 = elem
-		// } else if (i == 3) {
-		// 	ret.param2 = elem
-		// } else if (i == 4) {
-		// 	ret.param3 = elem
-		// }
-		if (i == 0) {
+		if i == 0 {
 			ret.setOpCode(elem)
 		} else {
-			ret.params = append(ret.params, elem)
+			ret.params = append(ret.params, parameter.CreateByString(elem))
 		}
 	}
 	return &ret
 }
 
 func (i *Instruction) setOpCode(s string) {
-	switch (s) {
+	switch s {
 	default:
 		return
 	case "live":
@@ -174,7 +161,7 @@ func display(Register) {
 }
 
 func instructionRep(code OpCode) {
-	switch (code) {
+	switch code {
 	default:
 		return
 	case Live:
