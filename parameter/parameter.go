@@ -2,6 +2,7 @@ package parameter
 
 import (
 	"strconv"
+	"bytes"
 )
 
 type Type uint
@@ -12,8 +13,10 @@ const (
 	Ind
 )
 
+// TODO: Fix problem with Direct int16 / int32
+
 type Register uint8 // 1..=16
-type Direct int16
+type Direct int32
 type Indirect int32
 
 const RegPrefix = "r"
@@ -40,15 +43,31 @@ func CreateByString(s string) *Parameter {
 			value: uint8(v),
 		}
 	} else if s[0] == '%' {
-		v, _ := strconv.ParseInt(s[1:len(s)], 10, 16)
+		v, _ := strconv.ParseInt(s[1:len(s)], 10, 32)
 		return &Parameter{
 			_type: Dir,
-			value: int16(v),
+			value: int32(v),
 		}
 	}
 	v, _ := strconv.ParseInt(s, 10, 32)
 	return &Parameter{
-		_type: Dir,
+		_type: Ind,
 		value: int32(v),
 	}
+}
+
+func (p *Parameter) ToString() string {
+	var s string
+	buff := bytes.NewBufferString(s)
+
+	if p._type == Reg {
+		buff.WriteByte('r')
+		buff.WriteString(strconv.Itoa(int(p.value.(uint8))))
+	} else if p._type == Dir {
+		buff.WriteByte('%')
+		buff.WriteString(strconv.Itoa(int(p.value.(int32))))
+	} else {
+		buff.WriteString(strconv.Itoa(int(p.value.(int32))))
+	}
+	return buff.String()
 }

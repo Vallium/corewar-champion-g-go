@@ -2,6 +2,7 @@ package instruction
 
 import (
 	"strings"
+	"bytes"
 
 	parameter "github.com/Vallium/corewar-champion-g-go/parameter"
 )
@@ -42,7 +43,7 @@ type Instruction struct {
 	params []*parameter.Parameter
 }
 
-func Create(s string) *Instruction {
+func CreateByString(s string) *Instruction {
 	var ret Instruction
 	ins := strings.Split(s, " ")
 
@@ -51,10 +52,61 @@ func Create(s string) *Instruction {
 		if i == 0 {
 			ret.setOpCode(elem)
 		} else {
-			ret.params = append(ret.params, parameter.CreateByString(elem))
+			p := parameter.CreateByString(elem)
+			ret.params = append(ret.params, p)
 		}
 	}
 	return &ret
+}
+
+func (i *Instruction) ToString() string {
+	var s string
+	buff := bytes.NewBufferString(s)
+
+	switch i.opCode {
+	default:
+	case Live:
+		buff.WriteString("live")
+	case Load:
+		buff.WriteString("ld")
+	case Store:
+		buff.WriteString("st")
+	case Addition:
+		buff.WriteString("add")
+	case Substraction:
+		buff.WriteString("sub")
+	case And:
+		buff.WriteString("and")
+	case Or:
+		buff.WriteString("or")
+	case Xor:
+		buff.WriteString("xor")
+	case ZJump:
+		buff.WriteString("zjmp")
+	case LoadIndex:
+		buff.WriteString("ldi")
+	case StoreIndex:
+		buff.WriteString("sti")
+	case Fork:
+		buff.WriteString("fork")
+	case LongLoad:
+		buff.WriteString("lld")
+	case LongLoadIndex:
+		buff.WriteString("lldi")
+	case LongFork:
+		buff.WriteString("lfork")
+	case Display:
+		buff.WriteString("aff")
+	}
+
+	for index, param := range i.params {
+		buff.WriteByte(' ')
+		buff.WriteString(param.ToString())
+		if (index < len(i.params) - 1) {
+			buff.WriteByte(',')
+		} 
+	}
+	return buff.String()
 }
 
 func (i *Instruction) setOpCode(s string) {
@@ -158,43 +210,4 @@ func longFork(Direct) {
 
 func display(Register) {
 
-}
-
-func instructionRep(code OpCode) {
-	switch code {
-	default:
-		return
-	case Live:
-		live(0)
-	case Load:
-		load(0, 0)
-	case Store:
-		store(0, 0)
-	case Addition:
-		addition(0, 0, 0)
-	case Substraction:
-		substraction(0, 0, 0)
-	case And:
-		and(0, 0, 0)
-	case Or:
-		or(0, 0, 0)
-	case Xor:
-		xor(0, 0, 0)
-	case ZJump:
-		zJump(0)
-	case LoadIndex:
-		loadIndex(0, 0, 0)
-	case StoreIndex:
-		storeIndex(0, 0, 0)
-	case Fork:
-		fork(0)
-	case LongLoad:
-		longLoad(0, 0)
-	case LongLoadIndex:
-		longLoadIndex(0, 0, 0)
-	case LongFork:
-		longFork(0)
-	case Display:
-		display(0)
-	}
 }

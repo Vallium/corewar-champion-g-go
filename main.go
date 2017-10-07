@@ -9,10 +9,10 @@ import (
 
 func main() {
 	fmt.Println("Corewar champion G")
-	_, err := parser.Parse("./winners-2014/_-clear.s")
+	champion, err := parser.Parse("./winners-2014/_-clear.s")
 	if err != nil {
 		fmt.Println("parser error:", err)
 		os.Exit(1)
 	}
-	// fmt.Printf("%v\n", champion.GetInstruction())
+	champion.ToFile()
 }

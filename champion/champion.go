@@ -1,6 +1,9 @@
 package champion
 
 import (
+	"os"
+	"fmt"
+
 	inst "github.com/Vallium/corewar-champion-g-go/instruction"
 )
 
@@ -18,27 +21,29 @@ func (c *Champion) SetComment(comment string) {
 	c.comment = comment
 }
 
-func (c *Champion) GetName() string {
-	return c.name
-}
-
-func (c *Champion) GetComment() string {
-	return c.comment
-}
-
-func (c *Champion) GetInstruction() []*inst.Instruction {
-	return c.instructions
-}
-
 func (c *Champion) PushInstruction(instruction string) {
-	i := inst.Create(instruction)
+	i := inst.CreateByString(instruction)
 	c.instructions = append(c.instructions, i)
 }
 
-func Create(name string, comment string) *Champion {
-	var c Champion
+func (c *Champion) ToFile() {
+	f, err := os.Create("./" + c.name + ".s")
+    if err != nil {
+		fmt.Println("os.Create error: ", err)
+		os.Exit(1)
+	}
+	defer f.Close()
+	
+	f.WriteString(".name \"" + c.name + "\"\n")
+	f.WriteString(".comment \"" + c.comment + "\"\n\n")
+	for _, ins := range c.instructions {
+		f.WriteString(ins.ToString() + "\n")
+	}
+}
 
-	c.SetName(name)
-	c.SetComment(comment)
-	return &c
+func Create(name string, comment string) *Champion {
+	return &Champion {
+		name: name,
+		comment: comment,
+	}
 }
