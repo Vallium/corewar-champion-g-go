@@ -3,7 +3,9 @@ package champion
 import (
 	"os"
 	"fmt"
-
+	"bufio"
+	"strings"
+	
 	inst "github.com/Vallium/corewar-champion-g-go/instruction"
 )
 
@@ -46,4 +48,31 @@ func Create(name string, comment string) *Champion {
 		name: name,
 		comment: comment,
 	}
+}
+
+func CreateFromFile(path string) (*Champion, error) {
+	var champion *Champion
+	file, err := os.Open(path)
+
+	champion = Create("", "")
+
+	if err != nil {
+		return champion, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	index := 0
+	for scanner.Scan() {
+		if index == 0 {
+			champion.SetName(strings.Split(scanner.Text(), "\"")[1])
+		} else if index == 1 {
+			champion.SetComment(strings.Split(scanner.Text(), "\"")[1])
+		} else if index > 2 {
+			champion.PushInstruction(scanner.Text())
+		}
+		index++
+	}
+	return champion, scanner.Err()
 }
