@@ -1,8 +1,9 @@
 package instruction
 
 import (
-	"strings"
 	"bytes"
+	"math/rand"
+	"strings"
 
 	parameter "github.com/Vallium/corewar-champion-g-go/parameter"
 )
@@ -28,6 +29,10 @@ const (
 	LongFork
 	Display
 )
+
+const IndSize = 2
+const RegSize = 4
+const DirSize = RegSize
 
 type Register uint8 // 1..=16
 type Direct int16
@@ -55,6 +60,63 @@ func CreateByString(s string) *Instruction {
 			p := parameter.CreateByString(elem)
 			ret.params = append(ret.params, p)
 		}
+	}
+	return &ret
+}
+
+func CreateRandom() *Instruction {
+	var ret Instruction
+
+	switch rand.Intn(17) {
+	default:
+	case 1:
+		ret.opCode = Live
+		live()
+		// case 2:
+		// 	ret.opCode = Load
+		// 	load()
+		// case 3:
+		// 	ret.opCode = Store
+		// 	store()
+		// case 4:
+		// 	ret.opCode = Addition
+		// 	addition()
+		// case 5:
+		// 	ret.opCode = Substraction
+		// 	substraction()
+		// case 6:
+		// 	ret.opCode = And
+		// 	and()
+		// case 7:
+		// 	ret.opCode = Or
+		// 	or()
+		// case 8:
+		// 	ret.opCode = Xor
+		// 	xor()
+		// case 9:
+		// 	ret.opCode = ZJump
+		// 	zJump()
+		// case 10:
+		// 	ret.opCode = LoadIndex
+		// 	loadIndex()
+		// case 11:
+		// 	ret.opCode = StoreIndex
+		// 	storeIndex()
+		// case 12:
+		// 	ret.opCode = Fork
+		// 	fork()
+		// case 13:
+		// 	ret.opCode = LongLoad
+		// 	longLoad()
+		// case 14:
+		// 	ret.opCode = LongLoadIndex
+		// 	longLoadIndex()
+		// case 15:
+		// 	ret.opCode = LongFork
+		// 	longFork()
+		// case 16:
+		// 	ret.opCode = Display
+		// 	display()
 	}
 	return &ret
 }
@@ -102,9 +164,9 @@ func (i *Instruction) ToString() string {
 	for index, param := range i.params {
 		buff.WriteByte(' ')
 		buff.WriteString(param.ToString())
-		if (index < len(i.params) - 1) {
+		if index < len(i.params)-1 {
 			buff.WriteByte(',')
-		} 
+		}
 	}
 	return buff.String()
 }

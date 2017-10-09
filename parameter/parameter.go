@@ -1,8 +1,8 @@
 package parameter
 
 import (
-	"strconv"
 	"bytes"
+	"strconv"
 )
 
 type Type uint
@@ -18,6 +18,11 @@ const (
 type Register uint8 // 1..=16
 type Direct int32
 type Indirect int32
+
+type IndReg interface {
+	ind() Indirect
+	reg() Register
+}
 
 const RegPrefix = "r"
 const DirPrefix = "%"

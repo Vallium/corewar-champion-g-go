@@ -1,13 +1,16 @@
 package champion
 
 import (
-	"os"
-	"fmt"
 	"bufio"
+	"fmt"
+	"os"
 	"strings"
-	
+
 	inst "github.com/Vallium/corewar-champion-g-go/instruction"
 )
+
+const MemSize = 4 * 1024
+const ChampMaxSize = MemSize / 6
 
 type Champion struct {
 	name         string
@@ -30,12 +33,12 @@ func (c *Champion) PushInstruction(instruction string) {
 
 func (c *Champion) ToFile() {
 	f, err := os.Create("./" + c.name + ".s")
-    if err != nil {
+	if err != nil {
 		fmt.Println("os.Create error: ", err)
 		os.Exit(1)
 	}
 	defer f.Close()
-	
+
 	f.WriteString(".name \"" + c.name + "\"\n")
 	f.WriteString(".comment \"" + c.comment + "\"\n\n")
 	for _, ins := range c.instructions {
@@ -44,8 +47,8 @@ func (c *Champion) ToFile() {
 }
 
 func Create(name string, comment string) *Champion {
-	return &Champion {
-		name: name,
+	return &Champion{
+		name:    name,
 		comment: comment,
 	}
 }

@@ -19,7 +19,7 @@ func Create(size int) *Population {
 	}
 }
 
-func (p *Population) InjectPersonsFromFolder(path string) {
+func (p *Population) InjectIndividualsFromFolder(path string) {
 	files, err := ioutil.ReadDir(path)
 
 	if err != nil {
