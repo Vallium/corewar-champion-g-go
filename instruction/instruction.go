@@ -30,13 +30,12 @@ const (
 	Display
 )
 
-const IndSize = 2
-const RegSize = 4
-const DirSize = RegSize
+const OpCodeSize int = 1
+const ParamCodeSize int = 1
 
 type Register uint8 // 1..=16
-type Direct int16
-type Indirect int32
+type Indirect int16
+type Direct int32
 
 type IndReg uint8
 type DirReg uint8
@@ -57,7 +56,12 @@ func CreateByString(s string) *Instruction {
 		if i == 0 {
 			ret.setOpCode(elem)
 		} else {
-			p := parameter.CreateByString(elem)
+			flag := false
+			switch ret.opCode {
+			case ZJump, LoadIndex, StoreIndex, Fork, LongLoadIndex, LongFork:
+				flag = true
+			}
+			p := parameter.CreateByString(elem, flag)
 			ret.params = append(ret.params, p)
 		}
 	}
@@ -71,7 +75,7 @@ func CreateRandom() *Instruction {
 	default:
 	case 1:
 		ret.opCode = Live
-		live()
+		// live()
 		// case 2:
 		// 	ret.opCode = Load
 		// 	load()
@@ -119,6 +123,57 @@ func CreateRandom() *Instruction {
 		// 	display()
 	}
 	return &ret
+}
+
+func (i *Instruction) GetMemSize() int {
+	var size int
+
+	switch i.opCode {
+	case Load, Store, And, Or, Xor, LoadIndex, StoreIndex, LongLoad, LongLoadIndex:
+		size += ParamCodeSize
+	}
+	for _, p := range i.params {
+		size += p.GetMemSize()
+	}
+	size += OpCodeSize
+	return size
+}
+
+func (i *Instruction) setOpCode(s string) {
+	switch s {
+	case "live":
+		i.opCode = Live
+	case "ld":
+		i.opCode = Load
+	case "st":
+		i.opCode = Store
+	case "add":
+		i.opCode = Addition
+	case "sub":
+		i.opCode = Substraction
+	case "and":
+		i.opCode = And
+	case "or":
+		i.opCode = Or
+	case "xor":
+		i.opCode = Xor
+	case "zjmp":
+		i.opCode = ZJump
+	case "ldi":
+		i.opCode = LoadIndex
+	case "sti":
+		i.opCode = StoreIndex
+	case "fork":
+		i.opCode = Fork
+	case "lld":
+		i.opCode = LongLoad
+	case "lldi":
+		i.opCode = LongLoadIndex
+	case "lfork":
+		i.opCode = LongFork
+	case "aff":
+		i.opCode = Display
+	}
 }
 
 func (i *Instruction) ToString() string {
@@ -169,45 +224,6 @@ func (i *Instruction) ToString() string {
 		}
 	}
 	return buff.String()
-}
-
-func (i *Instruction) setOpCode(s string) {
-	switch s {
-	default:
-		return
-	case "live":
-		i.opCode = Live
-	case "ld":
-		i.opCode = Load
-	case "st":
-		i.opCode = Store
-	case "add":
-		i.opCode = Addition
-	case "sub":
-		i.opCode = Substraction
-	case "and":
-		i.opCode = And
-	case "or":
-		i.opCode = Or
-	case "xor":
-		i.opCode = Xor
-	case "zjmp":
-		i.opCode = ZJump
-	case "ldi":
-		i.opCode = LoadIndex
-	case "sti":
-		i.opCode = StoreIndex
-	case "fork":
-		i.opCode = Fork
-	case "lld":
-		i.opCode = LongLoad
-	case "lldi":
-		i.opCode = LongLoadIndex
-	case "lfork":
-		i.opCode = LongFork
-	case "aff":
-		i.opCode = Display
-	}
 }
 
 func live(Direct) {

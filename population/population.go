@@ -33,6 +33,9 @@ func (p *Population) InjectIndividualsFromFolder(path string) {
 			fmt.Println("Cahmpion::CreateFromFile error: ", err)
 			os.Exit(1)
 		}
+		fmt.Print(f.Name())
+		fmt.Print(": ")
+		fmt.Println(c.GetMemSize())
 		p.champions = append(p.champions, c)
 	}
 }
