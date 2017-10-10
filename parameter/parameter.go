@@ -28,40 +28,40 @@ const DirPrefix = "%"
 const IndPrefix = ""
 
 type Parameter struct {
-	_type Type
-	value interface{}
-	flag  bool
+	_type      Type
+	value      interface{}
+	specialDir bool
 }
 
-func Create(_type Type, value interface{}, flag bool) *Parameter {
+func Create(_type Type, value interface{}, specialDir bool) *Parameter {
 	return &Parameter{
-		_type: _type,
-		value: value,
-		flag:  flag,
+		_type:      _type,
+		value:      value,
+		specialDir: specialDir,
 	}
 }
 
-func CreateByString(s string, flag bool) *Parameter {
+func CreateByString(s string, specialDir bool) *Parameter {
 	if s[0] == 'r' {
 		v, _ := strconv.ParseUint(s[1:len(s)], 10, 8)
 		return &Parameter{
-			_type: Reg,
-			value: uint8(v),
-			flag:  flag,
+			_type:      Reg,
+			value:      uint8(v),
+			specialDir: specialDir,
 		}
 	} else if s[0] == '%' {
 		v, _ := strconv.ParseInt(s[1:len(s)], 10, 32)
 		return &Parameter{
-			_type: Dir,
-			value: int32(v),
-			flag:  flag,
+			_type:      Dir,
+			value:      int32(v),
+			specialDir: specialDir,
 		}
 	}
 	v, _ := strconv.ParseInt(s, 10, 32)
 	return &Parameter{
-		_type: Ind,
-		value: int32(v),
-		flag:  flag,
+		_type:      Ind,
+		value:      int32(v),
+		specialDir: specialDir,
 	}
 }
 
@@ -72,7 +72,7 @@ func (p *Parameter) GetMemSize() int {
 	case Reg:
 		memSize = RegSize
 	case Dir:
-		if p.flag == true {
+		if p.specialDir == true {
 			memSize = IndSize
 		} else {
 			memSize = DirSize

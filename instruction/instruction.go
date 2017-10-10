@@ -56,12 +56,12 @@ func CreateByString(s string) *Instruction {
 		if i == 0 {
 			ret.setOpCode(elem)
 		} else {
-			flag := false
+			specialDir := false
 			switch ret.opCode {
 			case ZJump, LoadIndex, StoreIndex, Fork, LongLoadIndex, LongFork:
-				flag = true
+				specialDir = true
 			}
-			p := parameter.CreateByString(elem, flag)
+			p := parameter.CreateByString(elem, specialDir)
 			ret.params = append(ret.params, p)
 		}
 	}
@@ -129,7 +129,7 @@ func (i *Instruction) GetMemSize() int {
 	var size int
 
 	switch i.opCode {
-	case Load, Store, And, Or, Xor, LoadIndex, StoreIndex, LongLoad, LongLoadIndex:
+	case Load, Store, Addition, Substraction, And, Or, Xor, LoadIndex, StoreIndex, LongLoad, LongLoadIndex, Display:
 		size += ParamCodeSize
 	}
 	for _, p := range i.params {
