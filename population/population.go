@@ -14,9 +14,13 @@ type Population struct {
 }
 
 func Create(size int) *Population {
-	return &Population{
-		size: size,
+	var ret Population
+
+	ret.size = size
+	for i := 0; i < size; i++ {
+		ret.champions = append(ret.champions, champ.Random())
 	}
+	return &ret
 }
 
 func (p *Population) InjectIndividualsFromFolder(path string) {
@@ -33,9 +37,12 @@ func (p *Population) InjectIndividualsFromFolder(path string) {
 			fmt.Println("Cahmpion::CreateFromFile error: ", err)
 			os.Exit(1)
 		}
-		fmt.Print(f.Name())
-		fmt.Print(": ")
-		fmt.Println(c.GetMemSize())
 		p.champions = append(p.champions, c)
+	}
+}
+
+func (p *Population) ToFile(path string) {
+	for _, c := range p.champions {
+		c.ToFile(path)
 	}
 }

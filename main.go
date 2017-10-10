@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
+	"time"
 
 	popu "github.com/Vallium/corewar-champion-g-go/population"
 )
@@ -9,7 +11,9 @@ import (
 func main() {
 	fmt.Println("Corewar champion G")
 
+	rand.Seed(time.Now().Unix())
 	population := popu.Create(100)
 
-	population.InjectIndividualsFromFolder("./winners-2014")
+	population.ToFile("./champions-population")
+	// population.InjectIndividualsFromFolder("./winners-2014")
 }

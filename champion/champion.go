@@ -7,10 +7,13 @@ import (
 	"strings"
 
 	inst "github.com/Vallium/corewar-champion-g-go/instruction"
+	ng "github.com/Vallium/corewar-champion-g-go/pkg/namegenerator"
 )
 
-const MemSize = 4 * 1024
-const ChampMaxSize = MemSize / 6
+const MemSize int = 4 * 1024
+const ChampMaxSize int = MemSize / 6
+const MinIns int = 30
+const MaxIns int = ChampMaxSize / inst.Smallest
 
 type Champion struct {
 	name         string
@@ -52,6 +55,22 @@ func CreateFromFile(path string) (*Champion, error) {
 	return champion, scanner.Err()
 }
 
+func Random() *Champion {
+	champion := Create(ng.GetRandomName(0), "Muhammad ibn Jābir al-Ḥarrānī al-Battānī was a founding father of astronomy.")
+	// nbInstucions := rand.Intn(MaxIns-MinIns+1) + MinIns
+	var total_size int
+
+	for true {
+		i := inst.CreateRandom()
+		total_size += i.GetMemSize()
+		if total_size > ChampMaxSize {
+			break
+		}
+		champion.instructions = append(champion.instructions, i)
+	}
+	return champion
+}
+
 func (c *Champion) pushInstruction(instruction string) {
 	i := inst.CreateByString(instruction)
 	c.instructions = append(c.instructions, i)
@@ -74,8 +93,8 @@ func (c *Champion) GetMemSize() int {
 	return memSize
 }
 
-func (c *Champion) ToFile() {
-	f, err := os.Create("./" + c.name + ".s")
+func (c *Champion) ToFile(path string) {
+	f, err := os.Create(path + "/" + c.name + ".s")
 	if err != nil {
 		fmt.Println("os.Create error: ", err)
 		os.Exit(1)

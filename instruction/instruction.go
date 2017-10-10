@@ -32,15 +32,7 @@ const (
 
 const OpCodeSize int = 1
 const ParamCodeSize int = 1
-
-type Register uint8 // 1..=16
-type Indirect int16
-type Direct int32
-
-type IndReg uint8
-type DirReg uint8
-type DirInd int32
-type DirIndReg int32
+const Smallest int = 3
 
 type Instruction struct {
 	opCode OpCode
@@ -71,56 +63,74 @@ func CreateByString(s string) *Instruction {
 func CreateRandom() *Instruction {
 	var ret Instruction
 
-	switch rand.Intn(17) {
-	default:
+	switch rand.Intn(16) + 1 {
 	case 1:
 		ret.opCode = Live
-		// live()
-		// case 2:
-		// 	ret.opCode = Load
-		// 	load()
-		// case 3:
-		// 	ret.opCode = Store
-		// 	store()
-		// case 4:
-		// 	ret.opCode = Addition
-		// 	addition()
-		// case 5:
-		// 	ret.opCode = Substraction
-		// 	substraction()
-		// case 6:
-		// 	ret.opCode = And
-		// 	and()
-		// case 7:
-		// 	ret.opCode = Or
-		// 	or()
-		// case 8:
-		// 	ret.opCode = Xor
-		// 	xor()
-		// case 9:
-		// 	ret.opCode = ZJump
-		// 	zJump()
-		// case 10:
-		// 	ret.opCode = LoadIndex
-		// 	loadIndex()
-		// case 11:
-		// 	ret.opCode = StoreIndex
-		// 	storeIndex()
-		// case 12:
-		// 	ret.opCode = Fork
-		// 	fork()
-		// case 13:
-		// 	ret.opCode = LongLoad
-		// 	longLoad()
-		// case 14:
-		// 	ret.opCode = LongLoadIndex
-		// 	longLoadIndex()
-		// case 15:
-		// 	ret.opCode = LongFork
-		// 	longFork()
-		// case 16:
-		// 	ret.opCode = Display
-		// 	display()
+		ret.params = append(ret.params, parameter.RandDirect(false))
+	case 2:
+		ret.opCode = Load
+		ret.params = append(ret.params, parameter.RandDirInd(false))
+		ret.params = append(ret.params, parameter.RandRegister())
+	case 3:
+		ret.opCode = Store
+		ret.params = append(ret.params, parameter.RandRegister())
+		ret.params = append(ret.params, parameter.RandIndReg())
+	case 4:
+		ret.opCode = Addition
+		ret.params = append(ret.params, parameter.RandRegister())
+		ret.params = append(ret.params, parameter.RandRegister())
+		ret.params = append(ret.params, parameter.RandRegister())
+	case 5:
+		ret.opCode = Substraction
+		ret.params = append(ret.params, parameter.RandRegister())
+		ret.params = append(ret.params, parameter.RandRegister())
+		ret.params = append(ret.params, parameter.RandRegister())
+	case 6:
+		ret.opCode = And
+		ret.params = append(ret.params, parameter.RandDirIndReg(false))
+		ret.params = append(ret.params, parameter.RandDirIndReg(false))
+		ret.params = append(ret.params, parameter.RandRegister())
+	case 7:
+		ret.opCode = Or
+		ret.params = append(ret.params, parameter.RandDirIndReg(false))
+		ret.params = append(ret.params, parameter.RandDirIndReg(false))
+		ret.params = append(ret.params, parameter.RandRegister())
+	case 8:
+		ret.opCode = Xor
+		ret.params = append(ret.params, parameter.RandDirIndReg(false))
+		ret.params = append(ret.params, parameter.RandDirIndReg(false))
+		ret.params = append(ret.params, parameter.RandRegister())
+	case 9:
+		ret.opCode = ZJump
+		ret.params = append(ret.params, parameter.RandDirect(true))
+	case 10:
+		ret.opCode = LoadIndex
+		ret.params = append(ret.params, parameter.RandDirIndReg(true))
+		ret.params = append(ret.params, parameter.RandDirReg(true))
+		ret.params = append(ret.params, parameter.RandRegister())
+	case 11:
+		ret.opCode = StoreIndex
+		ret.params = append(ret.params, parameter.RandRegister())
+		ret.params = append(ret.params, parameter.RandDirIndReg(true))
+		ret.params = append(ret.params, parameter.RandDirReg(true))
+	case 12:
+		ret.opCode = Fork
+		ret.params = append(ret.params, parameter.RandDirect(true))
+	case 13:
+		ret.opCode = LongLoad
+		ret.params = append(ret.params, parameter.RandDirInd(false))
+		ret.params = append(ret.params, parameter.RandRegister())
+	case 14:
+		ret.opCode = LongLoadIndex
+		ret.params = append(ret.params, parameter.RandDirIndReg(true))
+		ret.params = append(ret.params, parameter.RandDirReg(true))
+		ret.params = append(ret.params, parameter.RandRegister())
+	case 15:
+		ret.opCode = LongFork
+		ret.params = append(ret.params, parameter.RandDirect(true))
+	case 16:
+		ret.opCode = Display
+		ret.params = append(ret.params, parameter.RandRegister())
 	}
 	return &ret
 }
@@ -224,68 +234,4 @@ func (i *Instruction) ToString() string {
 		}
 	}
 	return buff.String()
-}
-
-func live(Direct) {
-
-}
-
-func load(DirInd, Register) {
-
-}
-
-func store(Register, IndReg) {
-
-}
-
-func addition(Register, Register, Register) {
-
-}
-
-func substraction(Register, Register, Register) {
-
-}
-
-func and(DirIndReg, DirIndReg, Register) {
-
-}
-
-func or(DirIndReg, DirIndReg, Register) {
-
-}
-
-func xor(DirIndReg, DirIndReg, Register) {
-
-}
-
-func zJump(Direct) {
-
-}
-
-func loadIndex(DirIndReg, DirReg, Register) {
-
-}
-
-func storeIndex(Register, DirIndReg, DirReg) {
-
-}
-
-func fork(Direct) {
-
-}
-
-func longLoad(DirInd, Register) {
-
-}
-
-func longLoadIndex(DirIndReg, DirReg, Register) {
-
-}
-
-func longFork(Direct) {
-
-}
-
-func display(Register) {
-
 }
