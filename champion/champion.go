@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	inst "github.com/Vallium/corewar-champion-g-go/instruction"
+	haddock "github.com/Vallium/corewar-champion-g-go/pkg/captainhaddock"
 	ng "github.com/Vallium/corewar-champion-g-go/pkg/namegenerator"
 )
 
@@ -18,6 +19,7 @@ const MaxIns int = ChampMaxSize / inst.Smallest
 type Champion struct {
 	name         string
 	comment      string
+	score        float32
 	instructions []*inst.Instruction
 }
 
@@ -56,7 +58,7 @@ func CreateFromFile(path string) (*Champion, error) {
 }
 
 func Random() *Champion {
-	champion := Create(ng.GetRandomName(0), "Muhammad ibn Jābir al-Ḥarrānī al-Battānī was a founding father of astronomy.")
+	champion := Create(ng.GetRandomName(0), haddock.HaddockSays())
 	// nbInstucions := rand.Intn(MaxIns-MinIns+1) + MinIns
 	var total_size int
 
@@ -91,6 +93,14 @@ func (c *Champion) GetMemSize() int {
 		memSize += i.GetMemSize()
 	}
 	return memSize
+}
+
+func (c *Champion) GetAssFileName() string {
+	return c.name + ".s"
+}
+
+func (c *Champion) GetCorFileName() string {
+	return c.name + ".cor"
 }
 
 func (c *Champion) ToFile(path string) {

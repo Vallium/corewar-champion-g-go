@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 
 	champ "github.com/Vallium/corewar-champion-g-go/champion"
 )
@@ -17,13 +18,14 @@ func Create(size int) *Population {
 	var ret Population
 
 	ret.size = size
-	for i := 0; i < size; i++ {
+	ret.injectIndividualsFromFolder("./winners-2014")
+	for i := len(ret.champions); i <= size; i++ {
 		ret.champions = append(ret.champions, champ.Random())
 	}
 	return &ret
 }
 
-func (p *Population) InjectIndividualsFromFolder(path string) {
+func (p *Population) injectIndividualsFromFolder(path string) {
 	files, err := ioutil.ReadDir(path)
 
 	if err != nil {
@@ -45,4 +47,17 @@ func (p *Population) ToFile(path string) {
 	for _, c := range p.champions {
 		c.ToFile(path)
 	}
+}
+
+func (p *Population) CompileCor() {
+	for _, c := range p.champions {
+		cmd := exec.Command("./bin/asm", "./champions-population/"+c.GetAssFileName())
+		cmd.Run()
+	}
+}
+
+func PlayMatch(c1 champ.Champion, c2 champ.Champion) {
+	path := "./champions-population/"
+	cmd := exec.Command("./bin/corewar", path+c1.GetCorFileName(), path+c2.GetCorFileName())
+	cmd.Run()
 }
