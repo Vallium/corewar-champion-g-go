@@ -15,5 +15,5 @@ func main() {
 
 	population.ToFile("./champions-population")
 	population.CompileCor()
-	// population.InjectIndividualsFromFolder("./winners-2014")
+	population.Evaluate()
 }

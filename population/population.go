@@ -49,15 +49,28 @@ func (p *Population) ToFile(path string) {
 	}
 }
 
-func (p *Population) CompileCor() {
-	for _, c := range p.champions {
-		cmd := exec.Command("./bin/asm", "./champions-population/"+c.GetAssFileName())
-		cmd.Run()
+func (p *Population) Evaluate() {
+	for index, c := range p.champions {
+		playMatch(c, p.champions[len(p.champions)-index-1])
 	}
 }
 
-func PlayMatch(c1 champ.Champion, c2 champ.Champion) {
+func (p *Population) CompileCor() {
+	for _, c := range p.champions {
+		// go func() {
+		cmd := exec.Command("./bin/asm", "./champions-population/"+c.GetAssFileName())
+		cmd.Run()
+		// }()
+	}
+}
+
+func playMatch(c1 *champ.Champion, c2 *champ.Champion) {
 	path := "./champions-population/"
+
+	// go func() {
 	cmd := exec.Command("./bin/corewar", path+c1.GetCorFileName(), path+c2.GetCorFileName())
-	cmd.Run()
+	output, _ := cmd.Output()
+	fmt.Println(string(output))
+	// cmd.Run()
+	// }()
 }
