@@ -19,7 +19,7 @@ const MaxIns int = ChampMaxSize / inst.Smallest
 type Champion struct {
 	name         string
 	comment      string
-	score        float32
+	score        float64
 	instructions []*inst.Instruction
 }
 
@@ -84,6 +84,18 @@ func (c *Champion) SetName(name string) {
 
 func (c *Champion) SetComment(comment string) {
 	c.comment = comment
+}
+
+func (c *Champion) IncScore(score float64) {
+	c.score += score
+}
+
+func (c *Champion) GetScore() float64 {
+	return c.score
+}
+
+func (c *Champion) GetName() string {
+	return c.name
 }
 
 func (c *Champion) GetMemSize() int {
