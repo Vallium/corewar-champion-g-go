@@ -15,6 +15,7 @@ const MemSize int = 4 * 1024
 const ChampMaxSize int = MemSize / 6
 const MinIns int = 30
 const MaxIns int = ChampMaxSize / inst.Smallest
+const CrossOverNb int = 4
 
 type Champion struct {
 	name         string
@@ -73,6 +74,44 @@ func Random() *Champion {
 	return champion
 }
 
+func CrossOver(father Champion, mother Champion) (*Champion, *Champion) {
+	var crossLen int
+
+	fatherInsts := father.instructions
+	motherInsts := mother.instructions
+	fatherLen := len(father.instructions)
+	motherLen := len(mother.instructions)
+
+	if fatherLen > motherLen {
+		crossLen = motherLen
+	} else {
+		crossLen = fatherLen
+	}
+	if crossLen%CrossOverNb != 0 {
+		crossLen -= crossLen % CrossOverNb
+	}
+	fmt.Println("crossLen: ", fatherLen)
+	fmt.Println("crossLen: ", motherLen)
+	fmt.Println("crossLen: ", crossLen/CrossOverNb)
+	for j := 0; j < CrossOverNb; j++ {
+		if ((crossLen/CrossOverNb)*j)%2 != 0 {
+			for i := (crossLen / CrossOverNb) * j; i < (crossLen/CrossOverNb)*(j+1); i++ {
+				fatherInsts[i], motherInsts[i] = motherInsts[i], fatherInsts[i]
+			}
+		}
+	}
+
+	child1 := Create(father.GetName(), "")
+	child2 := Create(mother.GetName(), "")
+
+	child1.instructions = fatherInsts
+	child2.instructions = motherInsts
+
+	fmt.Println("size c1", child1.GetMemSize())
+	fmt.Println("size c2", child2.GetMemSize())
+	return child1, child2
+}
+
 func (c *Champion) pushInstruction(instruction string) {
 	i := inst.CreateByString(instruction)
 	c.instructions = append(c.instructions, i)
@@ -88,6 +127,10 @@ func (c *Champion) SetComment(comment string) {
 
 func (c *Champion) IncScore(score float64) {
 	c.score += score
+}
+
+func (c *Champion) ResetScore() {
+	c.score = 0
 }
 
 func (c *Champion) GetScore() float64 {

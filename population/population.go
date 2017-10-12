@@ -147,9 +147,12 @@ func (p *Population) compileCor() {
 func (p *Population) GeneticLoopStart() {
 	// for true {
 	p.toFile("./champions-population")
-	p.compileCor()
-	p.evaluate()
-	p.newGeneration()
+	// p.compileCor()
+	// p.evaluate()
+	// p.newGeneration()
+	c1, c2 := champ.CrossOver(*p.champions[0], *p.champions[1])
+	c1.ToFile("./test")
+	c2.ToFile("./test")
 	// }
 }
 
@@ -164,6 +167,7 @@ func (p *Population) newGeneration() {
 		if index < 16 {
 			break
 		}
+		c.ResetScore()
 		newGen = append(newGen, c)
 	}
 
