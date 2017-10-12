@@ -11,9 +11,7 @@ func main() {
 	fmt.Println("Corewar champion G")
 
 	rand.Seed(42)
-	population := popu.Create(100)
+	population := popu.Create(20)
 
-	population.ToFile("./champions-population")
-	population.CompileCor()
-	population.Evaluate()
+	population.GeneticLoopStart()
 }

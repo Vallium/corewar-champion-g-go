@@ -58,7 +58,7 @@ func CreateFromFile(path string) (*Champion, error) {
 }
 
 func Random() *Champion {
-	champion := Create(ng.GetRandomName(0), haddock.HaddockSays())
+	champion := Create(ng.GetRandomName(0)+"_g1", haddock.HaddockSays())
 	// nbInstucions := rand.Intn(MaxIns-MinIns+1) + MinIns
 	var total_size int
 

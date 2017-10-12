@@ -10,11 +10,13 @@ import (
 	"sync"
 
 	champ "github.com/Vallium/corewar-champion-g-go/champion"
+	"github.com/bradfitz/slice"
 )
 
 type Population struct {
-	size      int
-	champions []*champ.Champion
+	size       int
+	generation int
+	champions  []*champ.Champion
 }
 
 type MTCommand struct {
@@ -27,11 +29,16 @@ func Create(size int) *Population {
 	var ret Population
 
 	ret.size = size
+	ret.generation = 1
 	ret.injectIndividualsFromFolder("./winners-2014")
 	for i := len(ret.champions); i <= size; i++ {
 		ret.champions = append(ret.champions, champ.Random())
 	}
 	return &ret
+}
+
+func (p *Population) incGeneration() {
+	p.generation++
 }
 
 func (p *Population) injectIndividualsFromFolder(path string) {
@@ -52,13 +59,13 @@ func (p *Population) injectIndividualsFromFolder(path string) {
 	}
 }
 
-func (p *Population) ToFile(path string) {
+func (p *Population) toFile(path string) {
 	for _, c := range p.champions {
 		c.ToFile(path)
 	}
 }
 
-func (p *Population) Evaluate() {
+func (p *Population) evaluate() {
 	path := "./champions-population/"
 	tasks := make(chan *MTCommand, 256)
 
@@ -114,13 +121,9 @@ func (p *Population) Evaluate() {
 
 	close(tasks)
 	wg.Wait()
-
-	for _, c := range p.champions {
-		fmt.Println(c.GetName(), ": ", c.GetScore())
-	}
 }
 
-func (p *Population) CompileCor() {
+func (p *Population) compileCor() {
 	tasks := make(chan *exec.Cmd, 64)
 
 	var wg sync.WaitGroup
@@ -139,4 +142,32 @@ func (p *Population) CompileCor() {
 	}
 	close(tasks)
 	wg.Wait()
+}
+
+func (p *Population) GeneticLoopStart() {
+	// for true {
+	p.toFile("./champions-population")
+	p.compileCor()
+	p.evaluate()
+	p.newGeneration()
+	// }
+}
+
+func (p *Population) newGeneration() {
+	slice.Sort(p.champions[:], func(i, j int) bool {
+		return p.champions[i].GetScore() > p.champions[j].GetScore()
+	})
+
+	var newGen []*champ.Champion
+
+	for index, c := range p.champions {
+		if index < 16 {
+			break
+		}
+		newGen = append(newGen, c)
+	}
+
+	// for _, c := range p.champions {
+	// 	fmt.Println(c.GetName(), ": ", c.GetScore())
+	// }
 }
