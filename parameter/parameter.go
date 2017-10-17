@@ -42,6 +42,11 @@ type Parameter struct {
 // 	}
 // }
 
+func (p *Parameter) CreateByCopy() *Parameter {
+	n := *p
+	return &n
+}
+
 func CreateByString(s string, specialDir bool) *Parameter {
 	if s[0] == 'r' {
 		v, _ := strconv.ParseInt(s[1:len(s)], 10, 16)

@@ -3,6 +3,7 @@ package population
 import (
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"os/exec"
 	"strconv"
@@ -147,31 +148,82 @@ func (p *Population) compileCor() {
 func (p *Population) GeneticLoopStart() {
 	// for true {
 	p.toFile("./champions-population")
-	// p.compileCor()
-	// p.evaluate()
+	p.compileCor()
+	p.evaluate()
 	// p.newGeneration()
-	c1, c2 := champ.CrossOver(*p.champions[0], *p.champions[1])
-	c1.ToFile("./test")
-	c2.ToFile("./test")
+	p.tournamentSelection()
 	// }
 }
 
+func (p *Population) tournamentSelection() {
+	var chosens []champ.Champion
+
+	for j := 0; j < 2; j++ {
+		var pool []champ.Champion
+
+		for i := 0.0; i < 0.10*float64(p.size); i += 1.0 {
+			c := p.champions[rand.Intn(p.size)]
+			// TODO: Check if duplicate random chosen
+			pool = append(pool, *c)
+		}
+		slice.Sort(pool[:], func(i, j int) bool {
+			return pool[i].GetScore() > pool[j].GetScore()
+		})
+		chosens = append(chosens, *pool[0].CreateByCopy())
+	}
+
+	child1, child2 := champ.CrossOver(chosens[0], chosens[1])
+	fmt.Println(child1.GetScore())
+	fmt.Println(child2.GetScore())
+}
+
+// func (p *Population) rouletteWheel(champ.Champion, champ.Champion) {
+// 	var sum float64
+// 	var probability float64
+
+// 	for _, c := range p.champions {
+// 		sum += c.GetScore()
+// 	}
+
+// 	var
+// 	for all members of population
+// 		probability = sum of probabilities + (fitness / sum)
+// 		sum of probabilities += probability
+// 	end for
+
+// // loop until new population is full
+// // do this twice
+// // 	number = Random between 0 and 1
+// //   for all members of population
+// // 	  if number > probability but less than next probability
+// // 		   then you have been selected
+// //   end for
+// // end
+// // create offspring
+// // end loop
+// }
+
 func (p *Population) newGeneration() {
+	// var p1 Population
+
 	slice.Sort(p.champions[:], func(i, j int) bool {
 		return p.champions[i].GetScore() > p.champions[j].GetScore()
 	})
 
-	var newGen []*champ.Champion
+	var newGen Population
 
-	for index, c := range p.champions {
-		if index < 16 {
-			break
-		}
-		c.ResetScore()
-		newGen = append(newGen, c)
+	for _, c := range p.champions {
+		cc := c.CreateByCopy()
+		newGen.champions = append(newGen.champions, cc)
+		cc.ResetScore()
 	}
 
-	// for _, c := range p.champions {
-	// 	fmt.Println(c.GetName(), ": ", c.GetScore())
-	// }
+	for _, c := range p.champions {
+		fmt.Println(c.GetName(), ": ", c.GetScore())
+	}
+	fmt.Println("\n")
+
+	for _, c := range newGen.champions {
+		fmt.Println(c.GetName(), ": ", c.GetScore())
+	}
 }

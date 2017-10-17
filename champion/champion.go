@@ -58,9 +58,21 @@ func CreateFromFile(path string) (*Champion, error) {
 	return champion, scanner.Err()
 }
 
+func (c *Champion) CreateByCopy() *Champion {
+	var n Champion
+
+	n.name = c.name
+	n.comment = c.comment
+	n.score = c.score
+
+	for _, i := range c.instructions {
+		n.instructions = append(n.instructions, i.CreateByCopy())
+	}
+	return &n
+}
+
 func Random() *Champion {
 	champion := Create(ng.GetRandomName(0)+"_g1", haddock.HaddockSays())
-	// nbInstucions := rand.Intn(MaxIns-MinIns+1) + MinIns
 	var total_size int
 
 	for true {
@@ -77,36 +89,39 @@ func Random() *Champion {
 func CrossOver(father Champion, mother Champion) (*Champion, *Champion) {
 	var crossLen int
 
-	fatherInsts := father.instructions
-	motherInsts := mother.instructions
-	fatherLen := len(father.instructions)
-	motherLen := len(mother.instructions)
+	child1 := father.CreateByCopy()
+	child2 := mother.CreateByCopy()
 
-	if fatherLen > motherLen {
-		crossLen = motherLen
+	child1Insts := child1.instructions
+	child2Insts := child2.instructions
+	child1Len := len(child1Insts)
+	child2Len := len(child2Insts)
+
+	if child1Len > child2Len {
+		crossLen = child2Len
 	} else {
-		crossLen = fatherLen
+		crossLen = child1Len
 	}
 	if crossLen%CrossOverNb != 0 {
 		crossLen -= crossLen % CrossOverNb
 	}
-	fmt.Println("crossLen: ", fatherLen)
-	fmt.Println("crossLen: ", motherLen)
+	fmt.Println("crossLen: ", child1Len)
+	fmt.Println("crossLen: ", child2Len)
 	fmt.Println("crossLen: ", crossLen/CrossOverNb)
 	for j := 0; j < CrossOverNb; j++ {
 		if ((crossLen/CrossOverNb)*j)%2 != 0 {
 			for i := (crossLen / CrossOverNb) * j; i < (crossLen/CrossOverNb)*(j+1); i++ {
-				fatherInsts[i], motherInsts[i] = motherInsts[i], fatherInsts[i]
+				child1Insts[i], child2Insts[i] = child2Insts[i], child1Insts[i]
 			}
 		}
 	}
 
-	child1 := Create(father.GetName(), "")
-	child2 := Create(mother.GetName(), "")
-
-	child1.instructions = fatherInsts
-	child2.instructions = motherInsts
-
+	for child1.GetMemSize() > ChampMaxSize {
+		child1.instructions = child1.instructions[:len(child1.instructions)-1]
+	}
+	for child2.GetMemSize() > ChampMaxSize {
+		child2.instructions = child2.instructions[:len(child2.instructions)-1]
+	}
 	fmt.Println("size c1", child1.GetMemSize())
 	fmt.Println("size c2", child2.GetMemSize())
 	return child1, child2

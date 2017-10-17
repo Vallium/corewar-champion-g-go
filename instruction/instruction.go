@@ -135,6 +135,16 @@ func CreateRandom() *Instruction {
 	return &ret
 }
 
+func (i *Instruction) CreateByCopy() *Instruction {
+	var n Instruction
+
+	n.opCode = i.opCode
+	for _, p := range i.params {
+		n.params = append(n.params, p.CreateByCopy())
+	}
+	return &n
+}
+
 func (i *Instruction) GetMemSize() int {
 	var size int
 
